@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #555;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: calc(100% - 20px);
+            height: 120px;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: #007BFF;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #333;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        footer a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">Suicide Risk Detection</div>
+    <div class="container">
+        <h1>Analyze the Thought</h1>
+        <h2>Type a thought below and check the sentiment</h2>
+        <textarea id="inputText" placeholder="Enter your thought here..."></textarea>
+        <button onclick="predict()">Analyze Sentiment</button>
+        <div class="result" id="result">Prediction will appear here...</div>
+    </div>
+    <footer>
+        Powered by <a href="https://fastapi.tiangolo.com/" target="_blank">FastAPI</a> and <a href="https://pytorch.org/" target="_blank">PyTorch</a>
+    </footer>
+    <script>
+        async function predict() {
+            const text = document.getElementById("inputText").value;
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = "Analyzing...";
+            
+            try {
+                const response = await fetch("http://127.0.0.1:8000/predict/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                const data = await response.json();
+                //resultDiv.textContent = `Prediction: ${data.prediction}`;
+                if (data.prediction.toLowerCase() === "suicide") {
+                resultDiv.innerHTML = `Prediction: <strong>${data.prediction}</strong><br>Please contact Dr. Javier for assistance.`;
+                } else {
+                resultDiv.textContent = `Prediction: ${data.prediction}`;
+                }
+            } catch (error) {
+                resultDiv.textContent = "Error: Unable to fetch prediction.";
+            }
+        }
+    </script>
+</body>
+</html>
